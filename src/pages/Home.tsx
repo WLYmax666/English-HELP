@@ -1,5 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import type { CompletedWordSession, CompletedListening } from '../types'
+import Confetti from '../components/Confetti'
 
 /* ====== SVG Icons ====== */
 function PlayIcon() {
@@ -108,9 +109,39 @@ export default function Home({ username, onNavigate, wordSessions, listenings, w
     weekday: 'long', month: 'long', day: 'numeric',
   })
 
+  const [showCelebration, setShowCelebration] = useState(false)
+  useEffect(() => {
+    if (isDayComplete) {
+      setShowCelebration(true)
+      const t = setTimeout(() => setShowCelebration(false), 5000)
+      return () => clearTimeout(t)
+    }
+  }, [isDayComplete])
+
+  /* Floating decorative elements */
+  const FLOAT_ITEMS = ['📚', '✏️', '🎯', '💡', '🌟', 'A', 'B', 'C', 'E', 'α']
+
   return (
     <div className="flex flex-col min-h-screen relative">
-      {/* Decorative Background */}
+      <Confetti trigger={showCelebration} />
+      {/* Decorative Floating Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {FLOAT_ITEMS.map((item, i) => (
+          <span
+            key={i}
+            className="absolute select-none"
+            style={{
+              left: `${8 + (i * 9) % 85}%`,
+              top: `${8 + (i * 12) % 80}%`,
+              fontSize: `${1.2 + (i % 5) * 0.4}rem`,
+              opacity: 0.06,
+              animation: `float-letter ${6 + (i % 3) * 2}s ease-in-out ${i * 0.7}s infinite`,
+            }}
+          >
+            {item}
+          </span>
+        ))}
+      </div>
       <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-indigo-200/40 to-transparent rounded-full -translate-y-1/2 translate-x-1/4 blur-2xl pointer-events-none" />
       <div className="absolute top-32 -left-16 w-40 h-40 bg-gradient-to-tr from-sky-200/30 to-transparent rounded-full blur-2xl pointer-events-none" />
       <div className="absolute top-1/3 right-0 w-32 h-32 bg-gradient-to-bl from-amber-200/20 to-transparent rounded-full blur-xl pointer-events-none" />
@@ -147,7 +178,7 @@ export default function Home({ username, onNavigate, wordSessions, listenings, w
       </header>
 
       {/* ====== Hero Section ====== */}
-      <section className="relative mx-4 mt-1 bg-gradient-to-br from-white to-indigo-50/80 rounded-3xl shadow-lg shadow-indigo-200/30 border border-indigo-100/60 p-7 flex flex-col items-center overflow-hidden">
+      <section className="relative mx-4 mt-1 bg-gradient-to-br from-white to-indigo-50/80 rounded-3xl shadow-lg shadow-indigo-200/30 border border-indigo-100/60 p-7 flex flex-col items-center overflow-hidden breathe-glow">
         <div className="absolute -top-6 -right-6 w-24 h-24 bg-indigo-100/40 rounded-full blur-xl pointer-events-none" />
         <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-amber-100/30 rounded-full blur-lg pointer-events-none" />
         <ProgressRing progress={overallProgress} />

@@ -4,7 +4,8 @@ export interface Word {
   phonetic: string
   meaning: string
   root: string
-  examples: string[]
+  examples: { en: string; zh: string }[]
+  collocations: string[]
   movieExample: string
 }
 

@@ -68,6 +68,8 @@ export default function WordLearning({ onBack, onComplete, wordList }: Props) {
   const [recognitionResult, setRecognitionResult] = useState('')
   const [knownCount, setKnownCount] = useState(0)
   const [forgotCount, setForgotCount] = useState(0)
+  const [mouseX, setMouseX] = useState(50)
+  const [mouseY, setMouseY] = useState(50)
 
   const words = wordList ?? []
 
@@ -276,7 +278,21 @@ export default function WordLearning({ onBack, onComplete, wordList }: Props) {
             onClick={handleCardClick}
           >
             {/* ====== Card Front ====== */}
-            <div className="flip-card-front bg-gradient-to-br from-indigo-500 via-indigo-500 to-purple-600 shadow-2xl shadow-indigo-400/30 p-8 flex flex-col items-center justify-center cursor-pointer select-none">
+            <div
+              className="flip-card-front bg-gradient-to-br from-indigo-500 via-indigo-500 to-purple-600 shadow-2xl shadow-indigo-400/30 p-8 flex flex-col items-center justify-center cursor-pointer select-none"
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setMouseX(((e.clientX - rect.left) / rect.width) * 100)
+                setMouseY(((e.clientY - rect.top) / rect.height) * 100)
+              }}
+            >
+              {/* Interactive glow overlay */}
+              <div
+                className="absolute inset-0 pointer-events-none transition-opacity duration-200"
+                style={{
+                  background: `radial-gradient(circle at ${mouseX}% ${mouseY}%, rgba(255,255,255,0.2) 0%, transparent 60%)`,
+                }}
+              />
               {/* Decorative circles */}
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-sm pointer-events-none" />
               <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-white/5 rounded-full blur-sm pointer-events-none" />
@@ -315,17 +331,41 @@ export default function WordLearning({ onBack, onComplete, wordList }: Props) {
                 <div className="my-4 h-px bg-gradient-to-r from-indigo-200 via-purple-200 to-transparent" />
 
                 {/* Root memory aid */}
-                <div className="bg-indigo-50 rounded-xl p-3.5 mb-4">
+                <div className="bg-indigo-50 rounded-xl p-3.5 mb-3">
                   <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1">词根记忆</p>
                   <p className="text-sm text-slate-700 leading-relaxed">{word.root}</p>
                 </div>
 
+                {/* Collocations */}
+                {word.collocations.length > 0 && (
+                  <div className="mb-3">
+                    <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1.5">常见词组</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {word.collocations.map((col, i) => {
+                        const [phrase, ...rest] = col.split(' ')
+                        const cn = rest.join(' ')
+                        return (
+                          <span key={i} className="text-xs bg-white border border-indigo-200/60 rounded-lg px-2 py-1 text-slate-700 leading-relaxed">
+                            <span className="font-semibold text-indigo-600">{phrase}</span>
+                            {cn ? <span className="text-slate-400 ml-1">{cn}</span> : null}
+                          </span>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Examples */}
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {word.examples.map((ex, i) => (
-                    <div key={i} className="flex gap-2">
-                      <span className="text-indigo-400 font-bold text-sm shrink-0">•</span>
-                      <p className="text-sm text-slate-600 leading-relaxed">{ex}</p>
+                    <div key={i} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                      <div className="flex gap-2">
+                        <span className="text-indigo-400 font-bold text-sm shrink-0 mt-0.5">•</span>
+                        <div className="space-y-1">
+                          <p className="text-sm text-slate-700 leading-relaxed">{ex.en}</p>
+                          <p className="text-xs text-slate-400 leading-relaxed">{ex.zh}</p>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>

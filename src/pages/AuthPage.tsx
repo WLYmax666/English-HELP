@@ -45,6 +45,26 @@ export default function AuthPage({ onAuth }: Props) {
       <div className="absolute bottom-1/4 -left-20 w-48 h-48 bg-gradient-to-tr from-amber-200/15 to-transparent rounded-full blur-2xl pointer-events-none" />
       <div className="absolute top-1/3 left-1/4 w-32 h-32 bg-gradient-to-tr from-sky-200/10 to-transparent rounded-full blur-xl pointer-events-none" />
 
+      {/* Floating Decorative Elements */}
+      {['📘', '✏️', '🎯', '💡', '🌟', 'A', 'B', 'C', 'E', 'α', 'β'].map((item, i) => (
+        <span
+          key={i}
+          className="absolute pointer-events-none select-none"
+          style={{
+            left: `${5 + (i * 8) % 90}%`,
+            top: `${10 + (i * 10) % 80}%`,
+            fontSize: `${1 + (i % 4) * 0.5}rem`,
+            opacity: 0.05,
+            animation: `float-letter ${5 + (i % 4) * 2}s ease-in-out ${i * 0.5}s infinite`,
+          }}
+        >
+          {item}
+        </span>
+      ))}
+      {/* Spinning ring */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-indigo-200/10 rounded-full spin-slow pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] border border-amber-200/8 rounded-full spin-slow pointer-events-none" style={{ animationDirection: 'reverse', animationDuration: '12s' }} />
+
       {/* Logo / Title */}
       <div className="flex flex-col items-center mb-8">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl shadow-lg shadow-indigo-300/40 mb-4">

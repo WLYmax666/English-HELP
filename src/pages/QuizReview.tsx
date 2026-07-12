@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { Word, WrongWord } from '../types'
 import { WORD_BANK } from '../data/wordBank'
+import Confetti from '../components/Confetti'
 
 /* ========== 工具 ========== */
 function shuffle<T>(arr: T[]): T[] {
@@ -50,10 +51,19 @@ export default function QuizReview({ onBack, onComplete: _onComplete, onWrongWor
   const [correctCount, setCorrectCount] = useState(0)
   const [wrongWords, setWrongWords] = useState<WrongWord[]>([])
   const [finished, setFinished] = useState(false)
+  const [showConfetti, setShowConfetti] = useState(false)
 
   const q = questions[currentIndex]
   const total = questions.length
   const progress = currentIndex + 1
+
+  useEffect(() => {
+    if (finished && correctCount === total) {
+      setShowConfetti(true)
+      const t = setTimeout(() => setShowConfetti(false), 5000)
+      return () => clearTimeout(t)
+    }
+  }, [finished, correctCount, total])
 
   const handleSelect = (idx: number) => {
     if (selectedIdx !== null) return // already answered
@@ -99,6 +109,7 @@ export default function QuizReview({ onBack, onComplete: _onComplete, onWrongWor
   if (finished) {
     return (
       <div className="min-h-screen flex flex-col relative overflow-hidden">
+        <Confetti trigger={showConfetti} />
         <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-indigo-200/30 to-transparent rounded-full -translate-y-1/3 translate-x-1/4 blur-3xl pointer-events-none" />
         <div className="flex-1 flex flex-col items-center justify-center px-5">
           <span className="text-5xl mb-4">{correctCount === total ? '🏆' : correctCount >= total / 2 ? '👏' : '💪'}</span>

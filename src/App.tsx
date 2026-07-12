@@ -297,7 +297,9 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen">
-      {renderPage()}
+      <div className="page-enter" key={page}>
+        {renderPage()}
+      </div>
 
       {!isFullPage && (
         <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white/95 backdrop-blur-xl border-t border-indigo-100/60 px-3 pb-3 pt-2 safe-area-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50">

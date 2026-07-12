@@ -141,3 +141,95 @@ body {
   background: #f43f5e;
   animation: pulse-ring 1.5s ease-out infinite;
 }
+
+/* ====== Confetti Fall ====== */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100dvh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* ====== Confetti Drift ====== */
+@keyframes confetti-drift {
+  0%, 100% { margin-left: 0px; }
+  50% { margin-left: 30px; }
+}
+
+/* ====== Float Letter ====== */
+@keyframes float-letter {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-18px) rotate(4deg); }
+  66% { transform: translateY(10px) rotate(-3deg); }
+}
+
+/* ====== Float Letter Delayed ====== */
+@keyframes float-letter-reverse {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(12px) rotate(-5deg); }
+}
+
+/* ====== Page Transition ====== */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ====== Breathing Glow ====== */
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.15); }
+  50% { box-shadow: 0 0 50px rgba(79, 70, 229, 0.3); }
+}
+.breathe-glow {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+/* ====== Scale Pop ====== */
+@keyframes scale-pop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.scale-pop {
+  animation: scale-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ====== Shimmer underline ====== */
+@keyframes shimmer-underline {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shimmer-underline {
+  background: linear-gradient(90deg, #4f46e5, #818cf8, #4f46e5);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ====== Spin-slow for loading / decorative ====== */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* ====== Confetti piece base ====== */
+.confetti-piece {
+  position: fixed;
+  top: -10px;
+  pointer-events: none;
+  z-index: 100;
+  border-radius: 2px;
+  animation-fill-mode: forwards;
+}
