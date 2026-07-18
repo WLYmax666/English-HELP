@@ -69,16 +69,18 @@ interface Props {
   wordSessions: CompletedWordSession[]
   listenings: CompletedListening[]
   wrongWordsCount: number
+  inProgressSession?: CompletedWordSession | null
 }
 
 /* ====== Home Page ====== */
-export default function Home({ username, onNavigate, wordSessions, listenings, wrongWordsCount }: Props) {
-  /* Derive today''s progress from actual sessions */
+export default function Home({ username, onNavigate, wordSessions, listenings, wrongWordsCount, inProgressSession }: Props) {
+  /* Derive today''s progress from completed + in-progress sessions */
   const today = new Date().toISOString().slice(0, 10)
   const todaySessions = wordSessions.filter((s) => s.date === today)
+  const todayInProgress = inProgressSession?.date === today ? inProgressSession.knownCount : 0
   const wordProgress = useMemo(
-    () => todaySessions.reduce((sum, s) => sum + s.knownCount, 0),
-    [todaySessions],
+    () => todaySessions.reduce((sum, s) => sum + s.knownCount, 0) + todayInProgress,
+    [todaySessions, todayInProgress],
   )
   const DAILY_GOAL = 10
   const cappedProgress = Math.min(wordProgress, DAILY_GOAL)

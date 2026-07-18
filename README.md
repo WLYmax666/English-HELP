@@ -60,13 +60,67 @@
 
 ## 环境要求
 
-- **Node.js 18+**（推荐使用最新的 LTS 版本）
+- **Node.js 18+**（推荐最新的 LTS 版本）
 - **npm**（随 Node.js 一起安装）
 - **Chrome 浏览器**（推荐，语音识别功能仅 Chrome 支持）
 
+### macOS 安装 Node.js
+
+```bash
+# 方式一：使用 Homebrew（推荐）
+brew install node
+
+# 方式二：使用 fnm（Node 版本管理器）
+brew install fnm
+fnm install 22
+fnm use 22
+
+# 验证
+node -v   # 应输出 v18 或更高
+npm -v    # 应输出 9 或更高
+```
+
+### Windows 安装 Node.js
+
+```bash
+# 方式一：使用 fnm（推荐，无需管理员权限）
+winget install Schniz.fnm
+fnm install 22
+fnm use 22
+
+# 方式二：使用 scoop
+scoop install nodejs
+
+# 方式三：从官网下载安装包
+# 访问 https://nodejs.org/ 下载 LTS 版本安装
+
+# 验证（打开新的 cmd / PowerShell）
+node -v
+npm -v
+```
+
 > 如果 `npm install` 报错，请先执行 `node -v` 确认 Node.js 版本 ≥ 18。
 
-### 桌面快捷启动（Windows）
+### macOS 桌面启动
+
+macOS 没有 `.bat` 文件，建议通过终端启动或创建快捷方式：
+
+```bash
+# 方式一：终端启动
+cd /path/to/英语学习助手
+npm install    # 首次需要
+npm run dev    # 启动开发服务器
+# 浏览器访问 http://localhost:5173
+
+# 方式二：创建 Automator 应用（图形化快捷方式）
+# 1. 打开「自动操作」(Automator)
+# 2. 新建文稿 → 应用程序
+# 3. 添加「运行 Shell 脚本」操作，粘贴：
+#    cd /path/to/英语学习助手 && npm run dev -- --open
+# 4. 保存到「应用程序」文件夹，双击即可启动
+```
+
+### Windows 桌面启动
 
 双击项目根目录的 `英语学习助手.bat` 即可自动完成依赖安装、端口清理和服务器启动，浏览器自动打开。
 
@@ -93,14 +147,45 @@ npm run build
 npm run preview
 ```
 
+## 部署到生产环境
+
+本项目是纯前端应用（所有数据存储在浏览器的 localStorage 中），无需后端服务器即可部署。
+
+### 构建
+
+```bash
+npm run build
+```
+
+构建产物在 `dist/` 文件夹中，可直接部署到任何静态托管服务。
+
+### 部署方式
+
+| 平台 | 说明 |
+| --- | --- |
+| **Vercel** | 导入项目，自动识别 Vite 构建，部署即生效 |
+| **Netlify** | 导入项目，构建命令 `npm run build`，发布目录 `dist` |
+| **GitHub Pages** | 使用 `vite.config.ts` 设置 `base: '/<repo>/'`，配合 GitHub Actions |
+| **Nginx / Caddy** | 将 `dist/` 复制到服务器 web 目录即可 |
+
+### 跨平台注意事项
+
+| | macOS | Windows |
+|---|---|---|
+| 路径分隔符 | `/` | `\` 或 `/`（均支持） |
+| 启动命令 | `npm run dev` | `npm run dev` 或双击 `.bat` |
+| 端口占用 | `lsof -i :5173` 查看 | `netstat -ano \| findstr :5173` 查看 |
+| 语音识别 | Safari 不支持，推荐 Chrome | 仅 Chrome/Edge 支持 |
+| 麦克风权限 | 系统偏好设置 → 隐私 → 麦克风 | 浏览器弹窗允许即可 |
+
 ### 常见问题
 
 | 问题 | 解决方法 |
 | --- | --- |
 | `npm install` 报错 | 更新 Node.js 到 18 以上版本 |
 | 启动后浏览器无法访问 | 检查终端输出的端口号（默认 5173），访问对应地址 |
-| 页面空白无内容 | 按 `Ctrl+Shift+R` 强制刷新，或 `Ctrl+Shift+Delete` 清除缓存 |
-| 语音无法播放 | Chrome 浏览器需要允许页面使用麦克风和音频权限 |
+| 页面空白无内容 | 按 `Cmd+Shift+R`（macOS）/ `Ctrl+Shift+R`（Windows）强制刷新，或清除缓存 |
+| 语音无法播放 | 浏览器需要允许页面使用麦克风和音频权限 |
 | 端口被占用 | 关闭其他项目的开发服务器，或修改 `vite.config.ts` 中的 `port` 配置 |
 
 ## 项目结构
@@ -145,6 +230,7 @@ database/
 | `english_app_word_sessions_<username>`     | 单词学习会话记录         |
 | `english_app_listening_sessions_<username>` | 听力完成记录             |
 | `english_app_wrong_words_<username>`       | 错词本记录               |
+| `english_app_in_progress_<username>`       | 当前进行中的单词进度（中途退出不丢失） |
 
 ## 数据库（可选）
 

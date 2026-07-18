@@ -95,6 +95,14 @@ export default function App() {
       return raw ? JSON.parse(raw) : []
     } catch { return [] }
   })
+  const [inProgressSession, setInProgressSession] = useState<CompletedWordSession | null>(() => {
+    const user = getCurrentUser()
+    if (!user) return null
+    try {
+      const raw = localStorage.getItem(`english_app_in_progress_${user}`)
+      return raw ? JSON.parse(raw) : null
+    } catch { return null }
+  })
 
   /* 当前用户变化时加载数据 */
   useEffect(() => {
@@ -137,6 +145,12 @@ export default function App() {
     }
   }, [wrongWords, currentUser])
 
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem(`english_app_in_progress_${currentUser}`, JSON.stringify(inProgressSession))
+    }
+  }, [inProgressSession, currentUser])
+
   /* ---- Callbacks ---- */
   const addWordSession = useCallback((session: CompletedWordSession) => {
     setWordSessions((prev) => [session, ...prev])
@@ -155,6 +169,10 @@ export default function App() {
 
   const addWrongWord = useCallback((w: WrongWord) => {
     setWrongWords((prev) => [...prev, w])
+  }, [])
+
+  const onProgress = useCallback((session: CompletedWordSession) => {
+    setInProgressSession(session)
   }, [])
 
   const isFullPage = FULL_PAGES.includes(page as FullPage)
@@ -180,26 +198,26 @@ export default function App() {
 
   /* ---- 导航：普通学习 vs 继续学习 ---- */
   const handleNavigate = useCallback((p: string) => {
-    if (p === 'word-extra') {
+    if (p === 'word-extra' || p === 'word-learning') {
       const today = new Date().toISOString().slice(0, 10)
       const learned = new Set<string>()
+      // 排除已完成的今日会话中的单词
       wordSessions
         .filter((s) => s.date === today)
         .forEach((s) => s.words.forEach((w) => learned.add(w.word)))
-      setSessionWords(pickWords(learned, 5))
-      setPage('word-extra')
-    } else if (p === 'word-learning') {
-      const today = new Date().toISOString().slice(0, 10)
-      const learned = new Set<string>()
-      wordSessions
-        .filter((s) => s.date === today)
-        .forEach((s) => s.words.forEach((w) => learned.add(w.word)))
-      setSessionWords(pickWords(learned, 10))
-      setPage('word-learning')
+      // 若存在今日进行中的会话，将其完结并排除其单词
+      if (inProgressSession && inProgressSession.date === today && (inProgressSession.knownCount + inProgressSession.forgotCount > 0)) {
+        inProgressSession.words.forEach((w) => learned.add(w.word))
+        setWordSessions((prev) => [{ ...inProgressSession, id: Date.now().toString() }, ...prev])
+        setInProgressSession(null)
+      }
+      const count = p === 'word-extra' ? 5 : 10
+      setSessionWords(pickWords(learned, count))
+      setPage(p)
     } else {
       setPage(p as Page)
     }
-  }, [wordSessions])
+  }, [wordSessions, inProgressSession])
 
   const startReview = useCallback((words: CompletedWordSession['words']) => {
     setReviewWords(words)
@@ -213,7 +231,8 @@ export default function App() {
           <WordLearning
             wordList={sessionWords}
             onBack={() => setPage('home')}
-            onComplete={(session) => { addWordSession(session); setPage('home') }}
+            onProgress={onProgress}
+            onComplete={(session) => { addWordSession(session); setInProgressSession(null); setPage('home') }}
           />
         )
       case 'word-extra':
@@ -221,7 +240,8 @@ export default function App() {
           <WordLearning
             wordList={sessionWords}
             onBack={() => setPage('home')}
-            onComplete={(session) => { addWordSession(session); setPage('home') }}
+            onProgress={onProgress}
+            onComplete={(session) => { addWordSession(session); setInProgressSession(null); setPage('home') }}
           />
         )
       case 'word-review':
@@ -256,6 +276,7 @@ export default function App() {
             wordSessions={wordSessions}
             listenings={listenings}
             wrongWordsCount={wrongWords.length}
+            inProgressSession={inProgressSession}
           />
         )
       case 'listening':

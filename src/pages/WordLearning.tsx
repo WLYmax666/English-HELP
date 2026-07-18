@@ -56,10 +56,11 @@ function CloseBold() {
 interface Props {
   onBack: () => void
   onComplete: (session: CompletedWordSession) => void
+  onProgress?: (session: CompletedWordSession) => void
   wordList?: Word[]
 }
 
-export default function WordLearning({ onBack, onComplete, wordList }: Props) {
+export default function WordLearning({ onBack, onComplete, onProgress, wordList }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
   const [animClass, setAnimClass] = useState('')
@@ -72,6 +73,10 @@ export default function WordLearning({ onBack, onComplete, wordList }: Props) {
   const [mouseY, setMouseY] = useState(50)
 
   const words = wordList ?? []
+
+  /* ---- 用 ref 追踪最新值，供卸载时保存进度 ---- */
+  const latestRef = useRef({ knownCount, forgotCount, currentIndex, total: words.length, words })
+  latestRef.current = { knownCount, forgotCount, currentIndex, total: words.length, words }
 
   /* ---- Empty state (all hooks above) ---- */
   if (words.length === 0) {
@@ -160,6 +165,24 @@ export default function WordLearning({ onBack, onComplete, wordList }: Props) {
     }
   }, [])
 
+  /* 卸载时保存当前单词进度 */
+  useEffect(() => {
+    return () => {
+      const { knownCount, forgotCount, currentIndex, total, words } = latestRef.current
+      if (currentIndex > 0) {
+        onProgress?.({
+          id: '',
+          date: new Date().toISOString().slice(0, 10),
+          words: words.slice(0, currentIndex),
+          knownCount,
+          forgotCount,
+          totalCount: total,
+        })
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   /* ---- Compare user speech to word ---- */
   const getSimilarity = (a: string, b: string) => {
     const normalize = (s: string) => s.toLowerCase().replace(/[^a-z']/g, '')
@@ -193,14 +216,23 @@ export default function WordLearning({ onBack, onComplete, wordList }: Props) {
   }
 
   const nextWord = (action: 'know' | 'forgot') => {
+    const k = action === 'know' ? knownCount + 1 : knownCount
+    const f = action === 'forgot' ? forgotCount + 1 : forgotCount
     if (currentIndex < total - 1) {
+      // 报告当前进度（含刚答完的这个词）
+      onProgress?.({
+        id: '',
+        date: new Date().toISOString().slice(0, 10),
+        words: words.slice(0, currentIndex + 1),
+        knownCount: k,
+        forgotCount: f,
+        totalCount: total,
+      })
       setCurrentIndex((i) => i + 1)
       setAnimClass('card-enter')
       setTimeout(() => setAnimClass(''), 300)
     } else {
-      // 最后一个单词：保存会话数据
-      const k = action === 'know' ? knownCount + 1 : knownCount
-      const f = action === 'forgot' ? forgotCount + 1 : forgotCount
+      // 最后一个单词：保存完整会话
       onComplete({
         id: Date.now().toString(),
         date: new Date().toISOString().slice(0, 10),
