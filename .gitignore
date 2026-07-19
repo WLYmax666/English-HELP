@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Portable server binary
+eh-server.exe
+
+# Claude memory
+.claude/

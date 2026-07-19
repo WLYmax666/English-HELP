@@ -78,6 +78,7 @@ export default function Home({ username, onNavigate, wordSessions, listenings, w
   const today = new Date().toISOString().slice(0, 10)
   const todaySessions = wordSessions.filter((s) => s.date === today)
   const todayInProgress = inProgressSession?.date === today ? inProgressSession.knownCount : 0
+  const todayTotalWords = wordSessions.filter((s) => s.date === today).reduce((sum, s) => sum + s.totalCount, 0) + (inProgressSession?.date === today ? inProgressSession.totalCount : 0)
   const wordProgress = useMemo(
     () => todaySessions.reduce((sum, s) => sum + s.knownCount, 0) + todayInProgress,
     [todaySessions, todayInProgress],
@@ -237,6 +238,37 @@ export default function Home({ username, onNavigate, wordSessions, listenings, w
             </p>
           </div>
         ))}
+      </section>
+
+      {/* ====== Learned Words Section ====== */}
+      <section className="mx-4 mt-4 bg-gradient-to-br from-white to-sky-50/80 rounded-3xl shadow-sm border border-sky-100/60 p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-50 to-sky-100 flex items-center justify-center shadow-sm">
+              <span className="text-2xl">📖</span>
+            </div>
+            <div>
+              <p className="text-sm text-text-secondary/70">累计已学单词</p>
+              <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-indigo-500">
+                {totalWordsLearned}
+                <span className="text-sm font-medium ml-1 text-text-secondary">个</span>
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-text-secondary/70">今日新增</p>
+            <p className="text-lg font-bold text-indigo-600">+{todayTotalWords}</p>
+          </div>
+        </div>
+        <div className="mt-3 h-1.5 bg-sky-100/70 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-sky-400 to-indigo-400 rounded-full transition-all duration-700 ease-out"
+            style={{ width: `${Math.min((totalWordsLearned / 55) * 100, 100)}%` }}
+          />
+        </div>
+        <p className="text-xs text-text-secondary/60 mt-1.5">
+          已覆盖词库 {Math.min(totalWordsLearned, 55)}/55 个单词
+        </p>
       </section>
 
       {/* ====== Task List ====== */}
