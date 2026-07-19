@@ -9,7 +9,8 @@ New-Item -ItemType Directory -Path $dst -Force | Out-Null
 
 Copy-Item (Join-Path $src "dist") -Recurse -Destination (Join-Path $dst "dist")
 Copy-Item (Join-Path $src "eh-server.exe") -Destination $dst
-Copy-Item (Join-Path $src "英语学习助手.bat") -Destination $dst
+Copy-Item (Join-Path $src "eh-server.cs") -Destination $dst
+Copy-Item (Join-Path $src "portable-run.bat") -Destination $dst
 
 Compress-Archive -Path (Join-Path $dst "*") -DestinationPath $zip -Force
 

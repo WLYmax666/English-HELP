@@ -6,6 +6,33 @@ if not exist "dist\index.html" (
     exit /b 1
 )
 start http://localhost:5173
-eh-server.exe
+
+REM Method 1: Try eh-server.exe (pre-compiled C#)
+if exist "eh-server.exe" (
+    eh-server.exe
+    echo.
+    pause
+    exit /b 0
+)
+
+REM Method 2: Compile eh-server.cs with csc.exe (.NET Framework)
+if exist "eh-server.cs" (
+    where csc.exe >nul 2>&1
+    if not errorlevel 1 (
+        echo Compiling server...
+        csc.exe -out:eh-server.exe eh-server.cs /nologo >nul 2>&1
+        if exist "eh-server.exe" (
+            eh-server.exe
+            echo.
+            pause
+            exit /b 0
+        )
+    )
+)
+
+REM Method 3: PowerShell fallback with inline encoded script
+echo Starting server via PowerShell...
+powershell -ExecutionPolicy Bypass -NoProfile -EncodedCommand JHIgPSBKb2luLVBhdGggKEdldC1Mb2NhdGlvbikgImRpc3QiCiRpID0gSm9pbi1QYXRoICRyICJpbmRleC5odG1sIgppZiAoIShUZXN0LVBhdGggJGkpKSB7IFdyaXRlLUhvc3QgIkVycm9yOiBkaXN0XGluZGV4Lmh0bWwgbm90IGZvdW5kIjsgcGF1c2U7IGV4aXQgMSB9CiRzID0gTmV3LU9iamVjdCBTeXN0ZW0uTmV0LlNvY2tldHMuVGNwTGlzdGVuZXIoW05ldC5JUEFkZHJlc3NdOjpMb29wYmFjaywgNTE3MykKdHJ5IHsgJHMuU3RhcnQoKSB9IGNhdGNoIHsgV3JpdGUtSG9zdCAiRXJyb3I6IFBvcnQgNTE3MyBpbiB1c2UiOyBwYXVzZTsgZXhpdCAxIH0KV3JpdGUtSG9zdCAiIgpXcml0ZS1Ib3N0ICJFbmdsaXNoIExlYXJuaW5nIEFzc2lzdGFudCBzdGFydGVkIgpXcml0ZS1Ib3N0ICIgIGh0dHA6Ly9sb2NhbGhvc3Q6NTE3MyIKV3JpdGUtSG9zdCAiQ2xvc2UgdGhpcyB3aW5kb3cgdG8gc3RvcCB0aGUgc2VydmVyIgpXcml0ZS1Ib3N0ICIiCiRtID0gQHsiLmh0bWwiPSJ0ZXh0L2h0bWw7IGNoYXJzZXQ9dXRmLTgiOyIuY3NzIj0idGV4dC9jc3M7IGNoYXJzZXQ9dXRmLTgiOyIuanMiPSJhcHBsaWNhdGlvbi9qYXZhc2NyaXB0IjsiLmpzb24iPSJhcHBsaWNhdGlvbi9qc29uIjsiLnBuZyI9ImltYWdlL3BuZyI7Ii5pY28iPSJpbWFnZS94LWljb24iOyIuc3ZnIj0iaW1hZ2Uvc3ZnK3htbCJ9CndoaWxlICgkdHJ1ZSkgewogIHRyeSB7CiAgICAkYyA9ICRzLkFjY2VwdFRjcENsaWVudCgpCiAgICAkbiA9ICRjLkdldFN0cmVhbSgpCiAgICAkYiA9IE5ldy1PYmplY3QgYnl0ZVtdIDgxOTIKICAgICR4ID0gJG4uUmVhZCgkYiwgMCwgJGIuTGVuZ3RoKQogICAgaWYgKCR4IC1sZSAwKSB7ICRjLkNsb3NlKCk7IGNvbnRpbnVlIH0KICAgICR0ID0gW1RleHQuRW5jb2RpbmddOjpVVEY4LkdldFN0cmluZygkYiwgMCwgJHgpCiAgICAkbCA9ICR0IC1zcGxpdCAiYHJgbnxgbiIKICAgICRwID0gJGxbMF0gLXNwbGl0ICIgIgogICAgaWYgKCRwLkxlbmd0aCAtbHQgMikgeyAkYy5DbG9zZSgpOyBjb250aW51ZSB9CiAgICAkdSA9IFtVcmldOjpVbmVzY2FwZURhdGFTdHJpbmcoJHBbMV0pCiAgICAkcSA9ICR1LkluZGV4T2YoIj8iKQogICAgaWYgKCRxIC1nZSAwKSB7ICR1ID0gJHUuU3Vic3RyaW5nKDAsICRxKSB9CiAgICBpZiAoJHUgLWVxICIvIikgeyAkdSA9ICIvaW5kZXguaHRtbCIgfQogICAgJGYgPSBKb2luLVBhdGggJHIgJHUKICAgICRlID0gW0lPLlBhdGhdOjpHZXRFeHRlbnNpb24oJGYpLlRvTG93ZXIoKQogICAgaWYgKChUZXN0LVBhdGggJGYpIC1hbmQgIShUZXN0LVBhdGggJGYgLVBhdGhUeXBlIENvbnRhaW5lcikpIHsKICAgICAgJGJvZHkgPSBbSU8uRmlsZV06OlJlYWRBbGxCeXRlcygkZikKICAgICAgJGN0ID0gaWYgKCRtLkNvbnRhaW5zS2V5KCRlKSkgeyAkbVskZV0gfSBlbHNlIHsgImFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbSIgfQogICAgfSBlbHNlIHsKICAgICAgJGJvZHkgPSBbSU8uRmlsZV06OlJlYWRBbGxCeXRlcygkaSkKICAgICAgJGN0ID0gInRleHQvaHRtbDsgY2hhcnNldD11dGYtOCIKICAgIH0KICAgICRoID0gIkhUVFAvMS4xIDIwMCBPS2ByYG5Db250ZW50LVR5cGU6ICRjdGByYG5Db250ZW50LUxlbmd0aDogIiArICRib2R5Lkxlbmd0aCArICJgcmBuQ29ubmVjdGlvbjogY2xvc2VgcmBuYHJgbiIKICAgICRoYiA9IFtUZXh0LkVuY29kaW5nXTo6QVNDSUkuR2V0Qnl0ZXMoJGgpCiAgICAkbi5Xcml0ZSgkaGIsIDAsICRoYi5MZW5ndGgpCiAgICAkbi5Xcml0ZSgkYm9keSwgMCwgJGJvZHkuTGVuZ3RoKQogICAgJG4uQ2xvc2UoKQogICAgJGMuQ2xvc2UoKQogIH0gY2F0Y2gge30KfQ==
+
 echo.
 pause
