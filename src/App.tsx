@@ -177,11 +177,6 @@ export default function App() {
 
   const isFullPage = FULL_PAGES.includes(page as FullPage)
 
-  /* ---- Auth 守卫 ---- */
-  if (!currentUser) {
-    return <AuthPage onAuth={(username) => { persistCurrentUser(username); setCurrentUserState(username) }} />
-  }
-
   /* ---- Auth callbacks ---- */
   const handleLogout = useCallback(() => {
     persistCurrentUser(null)
@@ -223,6 +218,11 @@ export default function App() {
     setReviewWords(words)
     setPage('word-review' as Page)
   }, [])
+
+  /* ---- Auth 守卫 ---- */
+  if (!currentUser) {
+    return <AuthPage onAuth={(username) => { persistCurrentUser(username); setCurrentUserState(username) }} />
+  }
 
   const renderPage = () => {
     switch (page) {
