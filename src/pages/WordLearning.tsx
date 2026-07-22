@@ -369,7 +369,7 @@ export default function WordLearning({ onBack, onComplete, onProgress, wordList 
                 </div>
 
                 {/* Collocations */}
-                {word.collocations.length > 0 && (
+                {word.collocations && word.collocations.length > 0 && (
                   <div className="mb-3">
                     <p className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-1.5">常见词组</p>
                     <div className="flex flex-wrap gap-1.5">
@@ -388,6 +388,7 @@ export default function WordLearning({ onBack, onComplete, onProgress, wordList 
                 )}
 
                 {/* Examples */}
+                {word.examples && word.examples.length > 0 && (
                 <div className="space-y-3">
                   {word.examples.map((ex, i) => (
                     <div key={i} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
@@ -401,8 +402,10 @@ export default function WordLearning({ onBack, onComplete, onProgress, wordList 
                     </div>
                   ))}
                 </div>
+                )}
 
                 {/* Movie Example */}
+                {word.movieExample && (
                 <div className="mt-3 bg-amber-50 border border-amber-200/60 rounded-xl p-3">
                   <p className="text-[11px] font-bold text-amber-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3" /></svg>
@@ -410,6 +413,7 @@ export default function WordLearning({ onBack, onComplete, onProgress, wordList 
                   </p>
                   <p className="text-sm text-amber-800 leading-relaxed">{word.movieExample}</p>
                 </div>
+                )}
               </div>
 
               <p className="text-center text-xs text-slate-300 mt-3">点击翻转</p>

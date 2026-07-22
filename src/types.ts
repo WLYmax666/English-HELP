@@ -4,9 +4,9 @@ export interface Word {
   phonetic: string
   meaning: string
   root: string
-  examples: { en: string; zh: string }[]
-  collocations: string[]
-  movieExample: string
+  examples?: { en: string; zh: string }[]
+  collocations?: string[]
+  movieExample?: string
 }
 
 /* ========== 完成的学习会话 ========== */

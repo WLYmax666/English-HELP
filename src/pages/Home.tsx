@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import type { CompletedWordSession, CompletedListening } from '../types'
+import { WORD_BANK } from '../data/wordBank'
 import Confetti from '../components/Confetti'
 
 /* ====== SVG Icons ====== */
@@ -267,7 +268,7 @@ export default function Home({ username, onNavigate, wordSessions, listenings, w
           />
         </div>
         <p className="text-xs text-text-secondary/60 mt-1.5">
-          已覆盖词库 {Math.min(totalWordsLearned, 55)}/55 个单词
+          已覆盖词库 {Math.min(totalWordsLearned, WORD_BANK.length)}/{WORD_BANK.length} 个单词
         </p>
       </section>
 
